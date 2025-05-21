@@ -1,4 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Users } from './users.entity';
@@ -16,17 +22,40 @@ export class UsersService {
   }
 
   async findOne(id: number): Promise<Users> {
-    return this.usersRepository.findOneBy({ id });
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
   }
 
   async create(createUserDto: CreateUserDto): Promise<Users> {
-    const user = this.usersRepository.create(createUserDto);
-    return this.usersRepository.save(user);
+    const existing = await this.usersRepository.findOneBy({
+      email: createUserDto.email,
+    });
+    if (existing) {
+      throw new ConflictException('Email already in use');
+    }
+
+    try {
+      const user = this.usersRepository.create(createUserDto);
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      throw new InternalServerErrorException('Error creating user');
+    }
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<Users> {
-    await this.usersRepository.update(id, updateUserDto);
-    return this.usersRepository.findOneBy({ id });
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    try {
+      await this.usersRepository.update(id, updateUserDto);
+      return this.usersRepository.findOneBy({ id });
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating user');
+    }
   }
 
   async findByEmail(email: string): Promise<Users | null> {

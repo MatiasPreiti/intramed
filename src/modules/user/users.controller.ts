@@ -48,20 +48,6 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: 'Create a new user',
-    description: 'Create a new user with the provided details',
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    type: apiResponseWrapper(Users),
-    description: 'User created successfully',
-  })
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<Users> {
-    return this.usersService.create(createUserDto);
-  }
-
-  @ApiOperation({
     summary: 'Update a user',
     description: 'Update a user with the provided details',
   })
