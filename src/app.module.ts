@@ -8,6 +8,9 @@ import { UsersModule } from './modules/user/users.module';
 import { Users } from './modules/user/users.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import createDatabaseIfNotExists from './utils/database-utils/dbscript';
+import { StarwarsModule } from './modules/starwars/starwars.module';
+import { MoviesModule } from './modules/movies/movies.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -34,6 +37,9 @@ import createDatabaseIfNotExists from './utils/database-utils/dbscript';
     HealthModule,
     UsersModule,
     AuthModule,
+    ScheduleModule.forRoot(),
+    MoviesModule,
+    StarwarsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
