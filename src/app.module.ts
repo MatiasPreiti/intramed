@@ -11,6 +11,7 @@ import createDatabaseIfNotExists from './utils/database-utils/dbscript';
 import { StarwarsModule } from './modules/starwars/starwars.module';
 import { MoviesModule } from './modules/movies/movies.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { Movies } from './modules/movies/movies.entity';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { ScheduleModule } from '@nestjs/schedule';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME'),
-          entities: [Users],
+          entities: [Users, Movies],
           synchronize: false,
         };
       },

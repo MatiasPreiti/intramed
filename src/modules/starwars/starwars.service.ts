@@ -42,7 +42,7 @@ export class StarwarsService implements OnModuleInit {
           director: props.director ?? null,
           release_date: props.release_date ?? null,
           description: film.description ?? null,
-          properties: { ...(props.propiertes ?? null) },
+          properties: props ?? null,
         };
 
         try {
