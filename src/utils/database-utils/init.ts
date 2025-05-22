@@ -14,4 +14,5 @@ CREATE TABLE IF NOT EXISTS movies (
   description TEXT,
   properties JSON
 );
-`;
+INSERT INTO users (id, email, account, password, role) VALUES (1, 'admin@admin.com', 'admin', 'admin1', 'admin')
+ON CONFLICT (id) DO NOTHING;`;

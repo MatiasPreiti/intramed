@@ -12,21 +12,21 @@ import {
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiHeader,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { MoviesService } from './movies.service';
 import { Movies } from './movies.entity';
-import { apiResponseWrapper } from 'src/utils/factories/apiResponseWrapper.factory';
+import { apiResponseWrapper } from '../../utils/factories/apiResponseWrapper.factory';
 import { CreateMovieDto } from './dto/createMovies.dto';
-import { JwtAuthGuard } from 'src/utils/guard/jwtAuthGuard/jwtAuthGuard';
-import { RolesGuard } from 'src/utils/guard/roles/roles.guard';
-import { Roles } from 'src/utils/guard/roles/decorator';
-import { Public } from 'src/utils/guard/roles/public';
+import { JwtAuthGuard } from '../../utils/guard/jwtAuthGuard/jwtAuthGuard';
+import { RolesGuard } from '../../utils/guard/roles/roles.guard';
+import { Public } from '../../utils/guard/roles/public';
+import { Roles } from '../../utils/guard/roles/decorator';
 
 @ApiTags('Movies')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('movies')
 export class MoviesController {
@@ -57,8 +57,8 @@ export class MoviesController {
     type: apiResponseWrapper(Movies),
     description: 'Movie details',
   })
-  @Get(':id')
   @Roles('user')
+  @Get(':id')
   async findOne(@Param('id') id: number): Promise<Movies> {
     return this.moviesService.findOne(id);
   }
@@ -72,8 +72,8 @@ export class MoviesController {
     type: apiResponseWrapper(Movies),
     description: 'Movie created successfully',
   })
-  @Post()
   @Roles('admin')
+  @Post()
   async create(@Body() createMovieDto: CreateMovieDto): Promise<Movies> {
     return this.moviesService.addMovie(createMovieDto);
   }
@@ -88,8 +88,8 @@ export class MoviesController {
     description: 'Movie updated successfully',
   })
   @ApiBody({ type: CreateMovieDto, description: 'Fields to update (partial)' })
-  @Patch(':id')
   @Roles('admin')
+  @Patch(':id')
   async update(
     @Param('id') id: number,
     @Body() updateDto: Partial<CreateMovieDto>,
@@ -105,8 +105,8 @@ export class MoviesController {
     status: HttpStatus.NO_CONTENT,
     description: 'Movie deleted successfully',
   })
-  @Delete(':id')
   @Roles('admin')
+  @Delete(':id')
   async remove(@Param('id') id: number): Promise<void> {
     return this.moviesService.remove(id);
   }

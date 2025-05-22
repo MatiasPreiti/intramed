@@ -25,7 +25,7 @@ describe('HealthService', () => {
 
   describe('function getOk', () => {
     it('should return "Ok!"', () => {
-      expect(healthService.getOk()).toBe('Ok!');
+      expect(healthService.getOk()).toBe('Service Running OK');
     });
   });
 

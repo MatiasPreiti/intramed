@@ -17,6 +17,7 @@ async function bootstrap() {
     .setTitle(config.get('npm_package_name') || 'proyect')
     .addTag('Health', 'Help endpoints')
     .setVersion(config.get('npm_package_version') || '0.0.1')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

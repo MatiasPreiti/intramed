@@ -12,21 +12,25 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Proyecto en Nest Js creado por Matias Preiti como challenge tecnico para Intramed
 
 ## Project setup
 
-Este comando es muy importante ejecutarlo con el flag --legacy-peer-deps
+Este comando es muy importante ejecutarlo con el flag --legacy-peer-deps, en virtud de evitar errores con inconsistencia de versiones de dependencias que no tengan el mismo versionado a nivel global en su setup.
 
 ```bash
 $ npm install --legacy-peer-deps
 ```
 
-Luego de esto es Indespensable, crear el archivo .env en el root del proyecto, se creo un archivo .env.example como ejemplo el cual sirve como guia de las variables a agregar o se pueden utilizar las ya creadas si corresponden con su configuracion.
+### Importante
+
+Luego de esto es indespensable, crear el archivo `[.env]`en el root del proyecto, se creo un archivo .env.example como ejemplo el cual sirve como guia de las variables a agregar o se pueden utilizar las ya creadas si corresponden con su configuracion.
 
 ## Compile and run the project
 
-Antes de compilar el proyecto es muy importante tener postgreSQL levantado en el puerto y host especificado
+Antes de compilar el proyecto es muy importante tener postgreSQL levantado en el puerto y host especificado. No es necesario crear las tablas o base de datos, con tener una instancia de postgre en funcionamiento el propio proyecto creara la DB y las tablas necesarias para su funcionamiento.
+
+1. ejecutar comando:
 
 ```bash
 $ npm run start:dev
@@ -34,142 +38,291 @@ $ npm run start:dev
 
 Al ejecutar este comando luego de correr el install se creara automanticamente las tablas de la base de datos, tambien se injectaran datos en esta para ejecutar las pruebas de forma mas dinamica.
 
+2. Ejecutar comando de test
+
+```
+$ npm run test:cov
+```
+
+```## Cobertura de Tests
+
+* **Cobertura total de líneas:** 98.63%
+* **Declaraciones:** 98.78%
+* **Funciones:** 100%
+* **Ramificaciones:** 91.42%
+
+Test Suites: 14 passed, 14 total
+Tests:       79 passed, 79 total
+```
+
 ## Use of the project
 
-En primera instancia de deja en el root del proyecto una coleccion postman para importar si le es de utilidad.
+En primera instancia de deja en el root del proyecto una coleccion en formato Json para importar en postman o cualquier otra herramienta, si le es de utilidad.
 
-```
 Es sumamente importante que verifique la URL del proyecto y la baseURL que posee configurada en su Postman / Insomnia para que funcione correctamente.
-```
 
 Asimismo se documento el proyecto en Swager y puede utilizarse desde alli con el proyecto corriendo desde el Link:
 
 ```
 Swagger: http://localhost:3000/api
+obtener Json: http://localhost:3000/api-json
 ```
 
-# Endpoints challenge
+# Utilizacion del proyecto
 
-## Portfolio
+Para tener en cuenta no es posible crear usuarios Admin en esta aplicacion, por lo que para facilitar pruebas eh creado un registro que se crea en DB una cuenta con rol Admin.
 
-La respuesta deberá devolver el valor total de la cuenta de un usuario, sus pesos disponibles para operar y el listado de activos que posee (incluyendo cantidad de acciones, el valor total monetario de la posición ($) y el rendimiento total (%)).
+### Actualizacion e implementación API StarWars
 
-Curl:
-
-```
-curl -X 'GET' \
- 'http://localhost:3000/portfolio/1' \
- -H 'accept: application/json'
-```
-
-ejemplo de respuesta:
+Se ha creado un modulo starwars, el cual posee un cron asociado configurado en dos etapas. Primeramente este se corre cuando se inicializa el proyecto, siempre que el modulo starwars se inicialice procedera a correr la funcion correspondiente a la obtencion de las peliculas y en caso que estan no existan en la DB actualizarla.
+En segunda instancia se creo un cron recurrente el cual se inicializa cada 60 minutos, el cual es completamente configurable a gusto.
 
 ```
-{
-  "userId": "1",
-  "totalValue": "1798780",
-  "availableCash": "1798780",
-  "assets": [
-    {
-      "ticker": "BMA",
-      "name": "Banco Macro S.A.",
-      "size": 20,
-      "price": "1540.00",
-      "total_value": "30800.00",
-      "total_return": "-1.14783752672257852300"
-    },
-    {
-      "ticker": "BMA",
-      "name": "Banco Macro S.A.",
-      "size": 20,
-      "price": "1540.00",
-      "total_value": "30800.00",
-      "total_return": "7.55217545100813583300"
-    }
-  ]
-}
-```
-
-## Buscar activos
-
-La respuesta deberá devolver el listado de activos similares a la busqueda realizada dentro del mercado (tiene que soportar busqueda por ticker y/o por nombre).
-
-Curl:
-
-```
-curl -X 'GET' \
-  'http://localhost:3000/instruments/search?keyword=Telecom' \
-  -H 'accept: application/json'
-```
-
-Response ejemplo:
-
-```
-[
-  {
-    "id": 7,
-    "ticker": "TECO2",
-    "name": "Telecom",
-    "type": "ACCIONES"
-  },
-  {
-    "id": 73,
-    "ticker": "TECO2",
-    "name": "Telecom",
-    "type": "ACCIONES"
-  },
-  {
-    "id": 139,
-    "ticker": "TECO2",
-    "name": "Telecom",
-    "type": "ACCIONES"
-  },
-]
-```
-
-## Enviar una orden al mercado
-
-A traves de este endpoint se podrá enviar una orden de compra o venta del activo. Soportando dos tipos de ordenes: MARKET y LIMIT. Las ordenes MARKET no requieren que se envíe el precio ya que se ejecutara la orden con las ofertas del mercado, por el contrario, las ordenes limite requieren el envío del precio al cual el usuario quiere ejecutar la orden. La orden quedará grabada en la tabla orders con el estado y valores correspondientes.
-
-Curl:
-
-```
-curl -X 'POST' \
-  'http://localhost:3000/orders' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "instrumentid": 47,
-  "userid": 1,
-  "size": 50,
-  "price": 930,
-  "type": "MARKET",
-  "side": "BUY",
-  "investmentAmount": 46500
-}'
-```
-
-Response ejemplo:
-
-```
-{
-  "instrumentid": 47,
-  "userid": 1,
-  "size": 50,
-  "price": "925.85",
-  "type": "MARKET",
-  "side": "BUY",
-  "status": "FILLED",
-  "datetime": "2025-04-01T21:28:24.721Z",
-  "id": 89,
-  "instrument": {
-    "id": 47,
-    "ticker": "PAMP",
-    "name": "Pampa Holding S.A.",
-    "type": "ACCIONES"
+  @Cron(CronExpression.EVERY_HOUR)
+  async handleCron() {
+    await this.fetchFilms();
   }
+```
+
+Este modulo al encontrar actualizaciones utiliza el modulo de dominio, Movies el cual actualiza la DB segun sus parametros. La idea de esta funcionalidad separada es que el Modulo Movies pueda ser escalable a cualquier otra API o servicio para la actualizar de la DB.
+
+### Guía de Endpoints de la API
+
+Esta sección detalla los endpoints disponibles en la API, su propósito, cómo utilizarlos y los requisitos de autenticación/autorización.
+
+#### Autenticación y Gestión de Usuarios
+
+Estos endpoints permiten a los usuarios registrarse y obtener tokens de acceso para interactuar con las funcionalidades protegidas de la API.
+
+```
+POST /auth/register - Registro de Nuevo Usuario
+```
+
+Descripción: Permite crear una nueva cuenta de usuario en el sistema.
+Acceso: Público (no requiere autenticación).
+
+#### Request Body (JSON):
+
+```
+{
+  "email": "string",       // Ejemplo: "user@example.com"
+  "account": "string",     // Ejemplo: "myAccountName"
+  "password": "string"     // Ejemplo: "strongPassword123"
 }
 ```
+
+Respuestas:
+201 Created: Usuario creado exitosamente.
+400 Bad Request: Datos inválidos o usuario ya existente.
+Notas: Al registrarse, el role por defecto del usuario será 'user'.
+
+---
+
+```
+POST /auth/login - Inicio de Sesión y Obtención de Token JWT
+```
+
+Descripción: Autentica a un usuario existente y, si las credenciales son correctas, devuelve un token de acceso JWT. Este token debe ser utilizado en los Headers de futuras solicitudes a endpoints protegidos.
+Acceso: Público (no requiere autenticación).
+
+#### Request Body (JSON):
+
+```
+{
+  "email": "string",       // Ejemplo: "user@example.com"
+  "password": "string"     // Ejemplo: "strongPassword123"
+}
+```
+
+Respuestas:
+200 OK: Login exitoso, devuelve el token JWT.
+JSON
+
+```
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+401 Unauthorized: Credenciales inválidas.
+Cómo usar el token: Incluye el token en el encabezado Authorization de tus solicitudes de la siguiente manera: Authorization: Bearer YOUR_JWT_TOKEN.
+Endpoints de Salud del Servicio
+Estos endpoints proporcionan información básica sobre el estado y la versión de la aplicación.
+
+---
+
+```
+GET / - Health Check Básico
+```
+
+Descripción: Un endpoint simple para verificar si el servicio está operativo.
+Acceso: Público.
+Respuestas: 200 OK con un mensaje de "Ok".
+
+---
+
+```
+GET /info - Información del Microservicio
+```
+
+Descripción: Muestra detalles sobre el microservicio, como autor, fecha, entorno y versión.
+Acceso: Público.
+Respuestas: 200 OK con un objeto HealthDto.
+Gestión de Películas
+Estos endpoints permiten interactuar con la información de las películas, con distintos niveles de acceso basados en el rol del usuario.
+
+---
+
+```
+GET /movies - Obtener Todas las Películas
+```
+
+Descripción: Recupera una lista de todas las películas disponibles en el sistema.
+Acceso: Protegido (requiere token JWT válido).
+Respuestas:
+200 OK: Lista de películas.
+401 Unauthorized: Si el token no es válido o está ausente.
+
+---
+
+```
+GET /movies/{id} - Obtener Detalles de una Película por ID
+```
+
+Descripción: Recupera los detalles de una película específica utilizando su ID.
+Acceso: Solo "Usuarios Regulares" y "Administradores" (requiere token JWT válido con rol 'user' o 'admin').
+
+#### Parámetros de Ruta:
+
+```
+ id (number, requerido): El ID de la película.
+```
+
+Respuestas:
+200 OK: Detalles de la película.
+401 Unauthorized: Si el token no es válido o está ausente.
+403 Forbidden: Si el usuario no tiene el rol requerido ('user' o 'admin').
+404 Not Found: Si la película no existe.
+
+---
+
+```
+POST /movies - Crear una Nueva Película
+```
+
+Descripción: Permite a los administradores agregar una nueva película a la base de datos.
+Acceso: Solo "Administradores" (requiere token JWT válido con rol 'admin').
+
+#### Request Body (JSON):
+
+```
+{
+  "title": "string",           // Título de la película (requerido)
+  "director": "string",        // Director (opcional)
+  "release_date": "string",    // Fecha de lanzamiento (opcional, formato: "YYYY-MM-DD")
+  "description": "string",     // Descripción (opcional)
+  "properties": {}             // Objeto JSON con propiedades adicionales (opcional)
+}
+```
+
+Respuestas:
+201 Created: Película creada exitosamente.
+401 Unauthorized: Si el token no es válido o está ausente.
+403 Forbidden: Si el usuario no es un administrador.
+400 Bad Request: Datos inválidos.
+
+---
+
+```
+PATCH /movies/{id} - Actualizar Información de una Película
+```
+
+Descripción: Permite a los administradores actualizar parcialmente la información de una película existente.
+Acceso: Solo "Administradores" (requiere token JWT válido con rol 'admin').
+Parámetros de Ruta:
+id (number, requerido): El ID de la película a actualizar.
+
+#### Request Body (JSON): Puede incluir cualquiera de los campos de CreateMovieDto para actualizar.
+
+```
+{
+  "title": "string",           // Opcional
+  "director": "string",        // Opcional
+  // ... otros campos
+}
+```
+
+Respuestas:
+200 OK: Película actualizada exitosamente.
+401 Unauthorized: Si el token no es válido o está ausente.
+403 Forbidden: Si el usuario no es un administrador.
+404 Not Found: Si la película no existe.
+400 Bad Request: Datos inválidos.
+
+---
+
+```
+DELETE /movies/{id} - Eliminar una Película
+```
+
+Descripción: Permite a los administradores eliminar una película del sistema.
+Acceso: Solo "Administradores" (requiere token JWT válido con rol 'admin').
+
+#### Parámetros de Ruta:
+
+```
+id (number, requerido): El ID de la película a eliminar.
+```
+
+Respuestas:
+204 No Content: Película eliminada exitosamente (no devuelve contenido).
+401 Unauthorized: Si el token no es válido o está ausente.
+403 Forbidden: Si el usuario no es un administrador.
+404 Not Found: Si la película no existe.
+
+---
+
+```
+GET /users - Obtener Todos los Usuarios
+```
+
+Descripción: Recupera una lista de todos los usuarios registrados.
+Acceso: (Según tu implementación, probablemente solo para administradores, aunque Swagger no lo especifica con security como en /movies).
+Respuestas: 200 OK: Lista de usuarios.
+
+---
+
+```
+GET /users/{id} - Obtener un Usuario por ID
+```
+
+Descripción: Recupera los detalles de un usuario específico por su ID.
+Acceso: (Según tu implementación, probablemente solo para administradores o el propio usuario).
+
+#### Parámetros de Ruta: id (number, requerido): El ID del usuario.
+
+Respuestas: 200 OK: Detalles del usuario.
+
+---
+
+```
+PUT /users/{id} - Actualizar un Usuario
+```
+
+Descripción: Actualiza los detalles de un usuario.
+Acceso: (Según tu implementación, probablemente solo para administradores o el propio usuario).
+Parámetros de Ruta: id (number, requerido): El ID del usuario a actualizar.
+
+#### Request Body (JSON): Contiene los campos a actualizar del usuario.
+
+```
+{
+  "email": "string",
+  "account": "string"
+}
+```
+
+Respuestas: 200 OK: Usuario actualizado exitosamente.
 
 ## Stay in touch
 
